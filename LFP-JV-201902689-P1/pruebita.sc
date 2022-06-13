@@ -1,5 +1,9 @@
 //nomaspreubita
 
 aber
+/*coment
+aber
+term;inado*/
+dos_123 = 2
 
-123
+aber123//coment

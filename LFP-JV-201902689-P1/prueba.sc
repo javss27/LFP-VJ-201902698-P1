@@ -37,7 +37,8 @@ do{//comentarios
 void metodoa(int paramA, string paramB){
 //instrucciones
 }
-
+string frijolito = 0
+frijolito = 2
 void metodob(paramA,paramB){
 //instrucciones
 }
