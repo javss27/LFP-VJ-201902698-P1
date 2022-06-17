@@ -1,10 +1,17 @@
 //comentario una linea
 
+while(true){
+//instrucciones
+}//comentarios
+
+do{//comentarios
+//instrucciones
+}while(3=j)
 /*comentario
 de varias
 lineas*/
 
-//identificadores ejemplo _id12, id, id12, id_, id_id2
+//identificadores ejemplo _id12, id, id12, id_, id_id2 íáí
 
 // en tipo de dato puede ir: Int, Double, String, Char, Boolean
 

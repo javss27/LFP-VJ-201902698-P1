@@ -1,9 +1,14 @@
+from calendar import c
 from operator import truediv
 import os
+from string import digits
 
-D = ["1","2","3","4","5","6","7","8","9","0"]
-L= ["a","b","c","d","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
+#arreglos para buscar en los afd
+digito = ["1","2","3","4","5","6","7","8","9","0"]
+letra = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
 reservada = ["void","int","string","double","char","boolean","if","else","while","do"]
+
+#diccionario para palabras y caracteres reservado
 tokens = {
   "tk_reser_void": "void",
   "tk_reser_int": "int",
@@ -37,11 +42,15 @@ tokens = {
   "tk_operador_menor":"<",
   "tk_operador_mayor":">",
   "tk_operador_not":"!",
-  "tk_punto":"."
+  "tk_punto":".",
+  
 }
+
+
 lexema = ""
 estado = 0
 estado2 = 0
+#se ignoran los comentarios para el analziador lexico
 def afdComentarios(caracter):
     global estado
     if caracter == "/" and estado == 0:
@@ -61,21 +70,93 @@ def afdComentarios(caracter):
         estado = 0
     else:
         print("leyendo",estado)
-    
-def afd_Id(caracter):
-    cont =1
 
+# busca si es un id o una palabra reservada    
+def afd_Id(lexema2):
+    global lexema
+    if buscar_reservada(lexema2):
+        #reporte1: guardar fila, columna,lexema, token y patron
+        #reprote2: hacer un objeto para guarda estadop,caracter, lexema recono
+        print("Reconociod palabra reservada:",lexema2)
+    else:
+        #hay que hacer aqui lo del reporte2
+        print("Reconociod id:",lexema2)
+    lexema=""    
+
+"""def afd_char(lexema):
+
+def afd_string(lexema):
+
+def afd_num(lexema): """
+
+def buscar_reservada(char):
+    for token,patron in tokens.items():
+        #print("toke:",token,"  patro:", patron)
+        if patron == char:
+            return True
+    return False
+
+#aqui se envia cada linea del archivo
 def lee_Caracteres(cadena):
-    for x in range(0,len(cadena)):
-        print(cadena[x])
-        if estado2 == 0:
-            afdComentarios(cadena[x])
-        elif estado2 ==1:
-            afd_Id(cadena[x])
-        elif estado2 ==2:
-            afd_num(cadena[x])
-        elif estado2 == 3:
-            afd_reservadas(cadena[x])
+    global lexema,estado
+    for char in cadena:
+        print("estado:",estado)
+        if char == "/" and estado == 0:
+            estado = 1
+        elif estado == 1 and char == "/":
+            estado = 2
+        elif estado == 2 and char == "\n":
+            print("termina el coment",estado)
+            estado=0
+        elif char == "*" and estado ==1:#varias lienas           
+            estado =4
+        elif estado == 4 and char == "*":
+            estado =5
+        elif estado == 5 and char =="/":
+            print("coment varias")
+            estado = 0
+
+        if estado == 0 and char in letra or char == "_":
+            estado = 9
+            lexema += char
+
+        elif estado == 9:
+            if char in letra or char in digito or char =="_":
+                lexema += char
+            elif buscar_reservada(char):
+                estado = 10
+                afd_Id(lexema)
+        elif estado == 10:
+            if char in letra or char in digito or char =="_" or char == " ":
+                if char == " ":
+                    continue
+                else:
+                    lexema += char
+                    estado =9
+            elif char == '"':
+                estado =14
+            elif char == "'":
+                estado = 11
+        elif estado == 14:
+            if char == '"':
+                estado == 15
+                
+            else:
+                lexema += char
+        elif estado == 11:
+            if char in letra:
+                estado = 12
+        elif estado ==12:
+            if char == "'":
+                estado == 13
+
+            #elif buscar_reservada(char):
+
+        #elif estado == 0 and char in digits:
+
+
+
+
             
 
 def lecturaArchivo(ruta):     # validacion de la extension correcta  
@@ -90,7 +171,7 @@ def lecturaArchivo(ruta):     # validacion de la extension correcta
                 print("aqui hay lineas en blanco xd")
             else:
                 
-                print("tamos viendo kpx")               
+                #print("tamos viendo kpx")               
                 lee_Caracteres(linea) 
             line += 1
                          
