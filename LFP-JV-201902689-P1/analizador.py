@@ -6,7 +6,7 @@ from string import digits
 #arreglos para buscar en los afd
 digito = ["1","2","3","4","5","6","7","8","9","0"]
 letra = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
-reservada = ["void","int","string","double","char","boolean","if","else","while","do"]
+IGNORAR = " \n\t"
 
 #diccionario para palabras y caracteres reservado
 tokens = {
@@ -41,8 +41,8 @@ tokens = {
   "tk_operador_asignacion": "=",
   "tk_operador_menor":"<",
   "tk_operador_mayor":">",
-  "tk_operador_not":"!",
-  "tk_punto":".",
+  "tk_operador_not":"!"
+  
   
 }
 
@@ -99,60 +99,105 @@ def buscar_reservada(char):
 #aqui se envia cada linea del archivo
 def lee_Caracteres(cadena):
     global lexema,estado
+
     for char in cadena:
-        print("estado:",estado)
-        if char == "/" and estado == 0:
-            estado = 1
-        elif estado == 1 and char == "/":
-            estado = 2
-        elif estado == 2 and char == "\n":
-            print("termina el coment",estado)
-            estado=0
-        elif char == "*" and estado ==1:#varias lienas           
-            estado =4
-        elif estado == 4 and char == "*":
-            estado =5
-        elif estado == 5 and char =="/":
+        print("estado:",estado, "char:",char)
+        if estado == 0:
+            if char == "/":
+                estado = 1
+            elif char in digito:
+                estado =7
+                lexema += char
+            elif char in letra or char == "_":
+                estado = 9
+                lexema +=char
+            elif char in IGNORAR:
+                print("ignorar espacio")
+                estado = 0
+            elif char == '"':
+                estado =10
+                lexema += char
+            elif char == "'":
+                estado = 12
+                lexema += char
+            elif buscar_reservada(char):
+                print("token reconocido",char)
+            else:
+                print("char:",char)
+
+        elif estado == 1:
+            if char == "/":
+                estado = 2
+            elif char == "*":
+                estado =4
+        elif estado == 2:
+            if char == "\n":
+                print("termina el coment",estado)
+                estado=0
+
+
+        elif estado == 4:
+            if char == "*":
+                estado =5
+
+        elif estado == 5:
+            char =="/"
             print("coment varias")
             estado = 0
+        
+        elif estado == 7:
+            if char in digito:
+                lexema += char
+            elif char == ".":
+                estado = 8
+                lexema += char      
+            elif buscar_reservada(char) or char == " " or char == "\n":
+                estado =0
+                print("token num encontrado:", lexema)
+                lexema =""
 
-        if estado == 0 and char in letra or char == "_":
-            estado = 9
-            lexema += char
+        elif estado == 8:
+            if char in digito:
+                estado = 7
+                lexema += char
+            elif buscar_reservada(char) or char == " ":
+                estado = 0
+                print("token num decimal encontrado:", lexema)
+                lexema =""
 
         elif estado == 9:
             if char in letra or char in digito or char =="_":
                 lexema += char
             elif buscar_reservada(char):
-                estado = 10
+                print("token encontrado_st9",char)
                 afd_Id(lexema)
+                estado=0
+            elif char in IGNORAR:
+                estado = 0
+                afd_Id(lexema)
+
         elif estado == 10:
-            if char in letra or char in digito or char =="_" or char == " ":
-                if char == " ":
-                    continue
-                else:
-                    lexema += char
-                    estado =9
-            elif char == '"':
-                estado =14
-            elif char == "'":
-                estado = 11
-        elif estado == 14:
-            if char == '"':
-                estado == 15
-                
-            else:
+            if char != '"':
                 lexema += char
-        elif estado == 11:
+            else:
+                estado = 0
+                lexema += char
+                print("token string",lexema)
+                lexema =""
+        elif estado == 12:
             if char in letra:
-                estado = 12
-        elif estado ==12:
+                estado = 13
+                lexema += char
+            else:
+                estado = 0
+        elif estado == 13:
             if char == "'":
-                estado == 13
-
-            #elif buscar_reservada(char):
-
-        #elif estado == 0 and char in digits:
+                estado = 0
+                lexema += char
+                print("token char encontrado:",lexema)
+                lexema =""
+        else:
+            print("caracter invalido:",char)
 
 
 
