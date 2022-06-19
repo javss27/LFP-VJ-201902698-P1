@@ -5,7 +5,7 @@ El proyecto 1 es la creación de un lenguaje de programación similar al lenguaj
 Dicha aplicación ha sido desarrollada por Pablo Javier Batz Contreras estudiante de Lenguajes Formales de programación.
 
 Este programa fue realizado en Python, Visual Studio Code, HTML.
-## *Indice* 
+
 
 
 ## **Requisitos del sistema**
